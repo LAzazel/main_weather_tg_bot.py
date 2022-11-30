@@ -1,8 +1,5 @@
-import os
-
 import requests
 import datetime
-
 import telebot
 import os
 from config import open_weather_token
@@ -66,5 +63,14 @@ async def get_weather(message: types.Message):
         await message.reply('\U0000274C Wrong city name \U0000274C')
 
 
+def main():
+    bot.remove_webhook()
+    bot.set_webhook(url='https://weather-bot.herokuapp.com/' + TOKEN)
+    return 'Python Telegram Bot', 200
+
+
+
+
 if __name__ == '__main__':
+    main()
     executor.start_polling(dp)
