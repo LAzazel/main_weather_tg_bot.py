@@ -2,6 +2,7 @@ import requests
 import datetime
 import telebot
 import os
+from flask import Flask, request
 from config import open_weather_token
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
@@ -10,6 +11,7 @@ from aiogram.utils import executor
 
 TOKEN = os.environ.get('TOKEN')
 bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
 dp = Dispatcher(bot)
 
 
@@ -63,14 +65,18 @@ async def get_weather(message: types.Message):
         await message.reply('\U0000274C Wrong city name \U0000274C')
 
 
-def main():
+@server.route('/' + TOKEN, methods=['POST'])
+def get_message():
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode('utf-8'))])
+    return '!', 200
+
+
+@server.route('/')
+def web_hook():
     bot.remove_webhook()
     bot.set_webhook(url='https://weather-bot.herokuapp.com/' + TOKEN)
-    return 'Python Telegram Bot', 200
-
-
+    return '!', 200
 
 
 if __name__ == '__main__':
-    main()
-    executor.start_polling(dp)
+    server.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
