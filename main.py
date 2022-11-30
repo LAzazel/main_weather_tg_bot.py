@@ -5,23 +5,20 @@ import os
 from flask import Flask, request
 from config import open_weather_token
 from aiogram import types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
 
 
-TOKEN = os.environ.get('TOKEN')
+TOKEN = str(os.environ.get('TOKEN'))
 bot = telebot.TeleBot(TOKEN)
-server = Flask(__name__)
-dp = Dispatcher(bot)
+app = Flask(__name__)
 
 
-@dp.message_handler(commands=['start'])
-async def start_command(message: types.Message):
-    await message.reply("Hi! Write a city name and get a weather forecast!")
+@bot.message_handler(commands=['start'])
+def start_command(message: types.Message):
+    bot.send_message(message.chat.id, "Hi! Write a city name and get a weather forecast!")
 
 
-@dp.message_handler()
-async def get_weather(message: types.Message):
+@bot.message_handler()
+def get_weather(message: types.Message):
     code_to_smile = {
         'Clear': 'Clear \U00002600',
         'Clouds': 'Cloudy \U00002601',
@@ -55,23 +52,23 @@ async def get_weather(message: types.Message):
         length_of_the_day = datetime.datetime.fromtimestamp(data['sys']['sunset']) - datetime.datetime.fromtimestamp(
             data['sys']['sunrise'])
 
-        await message.reply(f'***{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}***\n'
+        bot.send_message(message.chat.id, f'***{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}***\n'
               f'Current weather in: {city}\nTemperature: {current_weather}°C {wd}\n'
               f'Humidity: {humidity}%\nPressure: {pressure} mm Hg\nWind: {wind} mps\n'
               f'Sunrise: {sunrise_timestamp}\nSunset: {sunset_timestamp}\nLength of the day: {length_of_the_day}\n'
               f'***Have a nice day!***'
               )
     except:
-        await message.reply('\U0000274C Wrong city name \U0000274C')
+        bot.send_message(message.chat.id, '\U0000274C Wrong city name \U0000274C')
 
 
-@server.route('/' + TOKEN, methods=['POST'])
+@app.route('/' + TOKEN, methods=['POST'])
 def get_message():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode('utf-8'))])
     return '!', 200
 
 
-@server.route('/')
+@app.route('/')
 def web_hook():
     bot.remove_webhook()
     bot.set_webhook(url='https://weather-bot.herokuapp.com/' + TOKEN)
@@ -79,4 +76,4 @@ def web_hook():
 
 
 if __name__ == '__main__':
-    server.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
