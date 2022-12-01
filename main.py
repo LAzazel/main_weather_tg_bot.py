@@ -8,14 +8,14 @@ from aiogram import types
 
 
 TOKEN = str(os.environ.get('TOKEN'))
-bot = telebot.TeleBot(token=TOKEN)
+bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
 
 @bot.message_handler(commands=['start'])
 def start_command(message: types.Message):
     bot.send_message(message.chat.id, "Hi! Write a city name and get a weather forecast!")
-
+    
 
 @bot.message_handler()
 def get_weather(message: types.Message):
@@ -60,7 +60,7 @@ def get_weather(message: types.Message):
               )
     except:
         bot.send_message(message.chat.id, '\U0000274C Wrong city name \U0000274C')
-
+        
 
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
