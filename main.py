@@ -6,7 +6,6 @@ from flask import Flask, request
 from config import open_weather_token
 from aiogram import types
 
-
 TOKEN = str(os.environ.get('TOKEN'))
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -15,7 +14,7 @@ app = Flask(__name__)
 @bot.message_handler(commands=['start'])
 def start_command(message: types.Message):
     bot.send_message(message.chat.id, "Hi! Write a city name and get a weather forecast!")
-    
+
 
 @bot.message_handler()
 def get_weather(message: types.Message):
@@ -52,15 +51,17 @@ def get_weather(message: types.Message):
         length_of_the_day = datetime.datetime.fromtimestamp(data['sys']['sunset']) - datetime.datetime.fromtimestamp(
             data['sys']['sunrise'])
 
-        bot.send_message(message.chat.id, f'***{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}***\n'
-              f'Current weather in: {city}\nTemperature: {current_weather}°C {wd}\n'
-              f'Humidity: {humidity}%\nPressure: {pressure} mm Hg\nWind: {wind} mps\n'
-              f'Sunrise: {sunrise_timestamp}\nSunset: {sunset_timestamp}\nLength of the day: {length_of_the_day}\n'
-              f'***Have a nice day!***'
-              )
+        bot.send_message(message.chat.id,
+                         f'***{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}***\n'
+                         f'Current weather in: {city}\nTemperature: {current_weather}°C {wd}\n'
+                         f'Humidity: {humidity}%\nPressure: {pressure} mm Hg\nWind: {wind} mps\n'
+                         f'Sunrise: {sunrise_timestamp}\nSunset: {sunset_timestamp}\n'
+                         f'Length of the day: {length_of_the_day}\n'
+                         f'***Have a nice day!***'
+                         )
     except:
         bot.send_message(message.chat.id, '\U0000274C Wrong city name \U0000274C')
-        
+
 
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
