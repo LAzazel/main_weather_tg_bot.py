@@ -3,7 +3,7 @@ import datetime
 import telebot
 import os
 from flask import Flask, request
-from config import open_weather_token
+from config import OPEN_WEATHER_TOKEN
 from aiogram import types
 
 TOKEN = str(os.environ.get('TOKEN'))
@@ -30,7 +30,7 @@ def get_weather(message: types.Message):
 
     try:
         r = requests.get(
-            f'https://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={open_weather_token}&units=metric'
+            f'https://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={OPEN_WEATHER_TOKEN}&units=metric'
         )
         data = r.json()
 
