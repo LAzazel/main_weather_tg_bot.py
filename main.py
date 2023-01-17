@@ -3,10 +3,9 @@ import datetime
 import telebot
 import os
 from flask import Flask, request
-from config import OPEN_WEATHER_TOKEN
+from config import OPEN_WEATHER_TOKEN, TOKEN
 from aiogram import types
 
-TOKEN = str(os.environ.get('TOKEN'))
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
@@ -59,6 +58,7 @@ def get_weather(message: types.Message):
                          f'Length of the day: {length_of_the_day}\n'
                          f'***Have a nice day!***'
                          )
+
     except:
         bot.send_message(message.chat.id, '\U0000274C Wrong city name \U0000274C')
 
